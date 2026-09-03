@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+
+# Environment
+.env
+*.env
+
+# Data (raw + chunks are re-generable; vectordb IS committed for Render)
+data/raw/
+data/chunks/
+data/embeddings/
+
+# Streamlit cache
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

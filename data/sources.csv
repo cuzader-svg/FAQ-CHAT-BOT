@@ -1,0 +1,6 @@
+id,scheme,title,url,publisher,doc_type,fetched_at
+1,hdfc_large_cap,HDFC Large Cap Fund Direct Growth,https://groww.in/mutual-funds/hdfc-large-cap-fund-direct-growth,Groww,scheme_page,run_ingest_to_populate
+2,hdfc_flexi_cap,HDFC Flexi Cap Fund Direct Growth,https://groww.in/mutual-funds/hdfc-equity-fund-direct-growth,Groww,scheme_page,run_ingest_to_populate
+3,hdfc_elss,HDFC ELSS Tax Saver Fund Direct Plan Growth,https://groww.in/mutual-funds/hdfc-elss-tax-saver-fund-direct-plan-growth,Groww,scheme_page,run_ingest_to_populate
+4,hdfc_small_cap,HDFC Small Cap Fund Direct Growth,https://groww.in/mutual-funds/hdfc-small-cap-fund-direct-growth,Groww,scheme_page,run_ingest_to_populate
+5,hdfc_balanced_advantage,HDFC Balanced Advantage Fund Direct Growth,https://groww.in/mutual-funds/hdfc-balanced-advantage-fund-direct-growth,Groww,scheme_page,run_ingest_to_populate

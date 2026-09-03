@@ -1,0 +1,18 @@
+# Core dependencies
+streamlit==1.35.0
+requests==2.32.3
+beautifulsoup4==4.12.3
+lxml==5.2.2
+
+# Embeddings (local, no API key needed)
+sentence-transformers==3.0.1
+torch==2.3.1
+
+# Vector store
+chromadb==0.5.3
+
+# LLM
+mistralai==1.0.3
+
+# Utilities
+python-dotenv==1.0.1

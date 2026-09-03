@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: faq-chat-bot
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: >
+      streamlit run code/ui/app.py
+      --server.port $PORT
+      --server.address 0.0.0.0
+      --server.headless true
+      --browser.gatherUsageStats false
+    envVars:
+      - key: PYTHONPATH
+        value: code
+      - key: MISTRAL_API_KEY
+        sync: false   # set manually in Render dashboard as a secret
+    plan: standard   # free plan is 512 MB and will OOM; standard = 1 GB

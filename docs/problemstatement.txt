@@ -1,0 +1,53 @@
+Learning in Public (LIP) Challenge — Milestone: Mutual Fund FAQs (Facts-Only Q&A)
+===================================================================================
+
+Product: Groww (https://groww.in/)
+AMC in scope: HDFC Mutual Fund
+
+Objective
+---------
+Build a small FAQ assistant that answers factual questions about HDFC mutual fund
+schemes as listed on Groww's public scheme pages. Every answer must include one
+source link. No investment advice.
+
+Corpus — exactly 5 public Groww URLs (no other sources)
+--------------------------------------------------------
+1. HDFC Large Cap Fund Direct Growth
+   https://groww.in/mutual-funds/hdfc-large-cap-fund-direct-growth
+
+2. HDFC Flexi Cap Fund Direct Growth (legacy slug)
+   https://groww.in/mutual-funds/hdfc-equity-fund-direct-growth
+
+3. HDFC ELSS Tax Saver Fund Direct Plan Growth
+   https://groww.in/mutual-funds/hdfc-elss-tax-saver-fund-direct-plan-growth
+
+4. HDFC Small Cap Fund Direct Growth
+   https://groww.in/mutual-funds/hdfc-small-cap-fund-direct-growth
+
+5. HDFC Balanced Advantage Fund Direct Growth
+   https://groww.in/mutual-funds/hdfc-balanced-advantage-fund-direct-growth
+
+Factual queries to answer
+--------------------------
+- Expense ratio of <scheme>?
+- ELSS lock-in period?
+- Minimum SIP amount for <scheme>?
+- Exit load of <scheme>?
+- Riskometer / benchmark of <scheme>?
+- (If on the pages) How to download a capital-gains statement?
+
+Constraints
+-----------
+- Public sources only. No app back-end screenshots. No third-party blogs.
+- No PII: do not accept or store PAN, Aadhaar, account numbers, OTPs, emails, phones.
+- No performance claims: do not compute or compare returns; cite the scheme page.
+- Answers ≤ 3 sentences. Include "Last updated from sources: YYYY-MM-DD".
+- Refuse advice questions (should I buy/sell?) with a polite message + scheme page link.
+
+Deliverables
+------------
+1. Working Streamlit prototype (local + Render hosted).
+2. data/sources.csv — the 5 URLs.
+3. README.md — setup steps, scope, known limits.
+4. data/sample_qa.md — 5-10 frozen Q&A pairs with answers + links.
+5. docs/disclaimer.md — disclaimer text used in the UI.
