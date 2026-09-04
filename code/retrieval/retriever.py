@@ -140,7 +140,7 @@ def ask(query: str) -> Answer:
     from vectordb.store import query_collection
 
     query_vec = embed_query(query)
-    results = query_collection(query_vec, n_results=4)
+    results = query_collection(query_vec, n_results=2)  # 2 is enough for single-fact answers
 
     docs = results.get("documents", [[]])[0]
     metas = results.get("metadatas", [[]])[0]
@@ -159,7 +159,7 @@ def ask(query: str) -> Answer:
         context_parts.append(
             f"[Chunk {i + 1}]\nScheme: {meta.get('title', '')}\n"
             f"Source URL: {meta.get('source_url', '')}\n"
-            f"Fetched: {meta.get('fetched_at', '')}\n\n{doc}"
+            f"Fetched: {meta.get('fetched_at', '')}\n\n{doc[:800]}"  # trimmed: 800 chars is enough
         )
     context = "\n\n---\n\n".join(context_parts)
 

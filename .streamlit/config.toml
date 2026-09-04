@@ -1,0 +1,7 @@
+[ui]
+# Hides the Deploy button and Streamlit toolbar from the top-right corner
+toolbarMode = "minimal"
+
+[browser]
+# Disable usage stats phone-home
+gatherUsageStats = false

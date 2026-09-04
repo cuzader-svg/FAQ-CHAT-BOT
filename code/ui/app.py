@@ -14,6 +14,15 @@ if _CODE_DIR not in sys.path:
 
 from retrieval.retriever import ask
 
+# Pre-warm the MiniLM embedding model at app startup so the first
+# user query is fast (model load takes 3-5s; moved here from first query).
+@st.cache_resource(show_spinner="Loading embedding model…")
+def _load_embedding_model():
+    from embedding.embedder import get_model
+    return get_model()
+
+_load_embedding_model()
+
 # ---------------------------------------------------------------------------
 # Page config
 # ---------------------------------------------------------------------------
@@ -114,8 +123,11 @@ st.markdown(
         color: #00796B !important;
     }
 
-    /* Hide Streamlit branding */
+    /* Hide Streamlit branding and Deploy toolbar */
     #MainMenu, footer { visibility: hidden; }
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"],
+    [data-testid="stStatusWidget"] { display: none !important; }
     </style>
     """,
     unsafe_allow_html=True,
