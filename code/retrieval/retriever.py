@@ -7,8 +7,10 @@ import re
 import sys
 from dataclasses import dataclass
 
+import json
+
+import requests
 from dotenv import load_dotenv
-from mistralai import Mistral
 
 load_dotenv()
 
@@ -176,20 +178,27 @@ def ask(query: str) -> Answer:
             refused=True,
         )
 
-    client = Mistral(api_key=api_key)
     user_message = f"{query}\n\nContext:\n{context}"
 
-    response = client.chat.complete(
-        model=MISTRAL_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
-        ],
-        max_tokens=300,
-        temperature=0.1,
+    resp = requests.post(
+        "https://api.mistral.ai/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": MISTRAL_MODEL,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_message},
+            ],
+            "max_tokens": 300,
+            "temperature": 0.1,
+        },
+        timeout=30,
     )
-
-    answer_text = response.choices[0].message.content.strip()
+    resp.raise_for_status()
+    answer_text = resp.json()["choices"][0]["message"]["content"].strip()
 
     return Answer(text=answer_text, source_url=source_url, fetched_at=fetched_at)
 
