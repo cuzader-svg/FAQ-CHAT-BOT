@@ -17,7 +17,7 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-MISTRAL_MODEL = "mistral-small-latest"
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 _ADVICE_PATTERNS = re.compile(
     r"\b(should i|should we|buy|sell|invest in|worth buying|best fund|"
@@ -168,11 +168,11 @@ def ask(query: str) -> Answer:
     source_url = primary_meta.get("source_url", _DEFAULT_SCHEME_URL)
     fetched_at = primary_meta.get("fetched_at", "")
 
-    # Call Mistral
-    api_key = os.getenv("MISTRAL_API_KEY")
+    # Call Groq
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
         return Answer(
-            text="MISTRAL_API_KEY is not set. Please add it to your .env file.",
+            text="GROQ_API_KEY is not set. Please add it to your .env file.",
             source_url=source_url,
             fetched_at=fetched_at,
             refused=True,
@@ -186,13 +186,13 @@ def ask(query: str) -> Answer:
     for attempt in range(3):
         try:
             resp = requests.post(
-                "https://api.mistral.ai/v1/chat/completions",
+                "https://api.groq.com/openai/v1/chat/completions",
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": MISTRAL_MODEL,
+                    "model": GROQ_MODEL,
                     "messages": [
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user", "content": user_message},
