@@ -180,27 +180,51 @@ def ask(query: str) -> Answer:
 
     user_message = f"{query}\n\nContext:\n{context}"
 
-    resp = requests.post(
-        "https://api.mistral.ai/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": MISTRAL_MODEL,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_message},
-            ],
-            "max_tokens": 300,
-            "temperature": 0.1,
-        },
-        timeout=30,
-    )
-    resp.raise_for_status()
-    answer_text = resp.json()["choices"][0]["message"]["content"].strip()
+    # Retry up to 3 times on 429 (rate limit) with backoff
+    import time
+    last_exc = None
+    for attempt in range(3):
+        try:
+            resp = requests.post(
+                "https://api.mistral.ai/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": MISTRAL_MODEL,
+                    "messages": [
+                        {"role": "system", "content": SYSTEM_PROMPT},
+                        {"role": "user", "content": user_message},
+                    ],
+                    "max_tokens": 300,
+                    "temperature": 0.1,
+                },
+                timeout=30,
+            )
+            if resp.status_code == 429:
+                wait = 2 ** attempt  # 1s, 2s, 4s
+                time.sleep(wait)
+                last_exc = Exception("Rate limited (429)")
+                continue
+            resp.raise_for_status()
+            answer_text = resp.json()["choices"][0]["message"]["content"].strip()
+            return Answer(text=answer_text, source_url=source_url, fetched_at=fetched_at)
+        except requests.RequestException as exc:
+            last_exc = exc
+            if attempt < 2:
+                time.sleep(2 ** attempt)
 
-    return Answer(text=answer_text, source_url=source_url, fetched_at=fetched_at)
+    # All retries exhausted
+    return Answer(
+        text=(
+            "The API is temporarily busy (rate limit). "
+            "Please wait a few seconds and try again."
+        ),
+        source_url=source_url,
+        fetched_at=fetched_at,
+        refused=True,
+    )
 
 
 # ---------------------------------------------------------------------------

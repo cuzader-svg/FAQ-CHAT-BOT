@@ -77,6 +77,43 @@ st.markdown(
     .source-line { font-size: 0.78rem; color: #00796B; margin-top: 0.6rem; }
     .updated-line { font-size: 0.75rem; color: #9E9E9E; margin-top: 0.2rem; }
 
+    /* Example question buttons — keep text dark and visible on hover */
+    .stButton > button {
+        background-color: #E8F5E9 !important;
+        color: #00796B !important;
+        border: 1px solid #00D09C !important;
+        border-radius: 20px !important;
+        font-size: 0.82rem !important;
+        font-weight: 500 !important;
+        transition: background-color 0.2s ease !important;
+    }
+    .stButton > button:hover {
+        background-color: #00D09C !important;
+        color: #FFFFFF !important;
+        border-color: #00B386 !important;
+    }
+    .stButton > button:active, .stButton > button:focus {
+        background-color: #00B386 !important;
+        color: #FFFFFF !important;
+        outline: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Expander header — keep text dark and visible on hover */
+    .st-expander summary,
+    [data-testid="stExpander"] summary,
+    details > summary {
+        color: #1A1A2E !important;
+        background-color: #F0FDF9 !important;
+        border-radius: 8px !important;
+    }
+    .st-expander summary:hover,
+    [data-testid="stExpander"] summary:hover,
+    details > summary:hover {
+        background-color: #D0F5EC !important;
+        color: #00796B !important;
+    }
+
     /* Hide Streamlit branding */
     #MainMenu, footer { visibility: hidden; }
     </style>
