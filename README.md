@@ -1,3 +1,14 @@
+---
+title: Groww MF FAQ
+emoji: 📊
+colorFrom: green
+colorTo: green
+sdk: streamlit
+sdk_version: "1.40.0"
+app_file: code/ui/app.py
+pinned: false
+---
+
 # Groww MF FAQ Chatbot — README
 
 A facts-only RAG chatbot for HDFC Mutual Fund schemes on Groww.
@@ -13,7 +24,7 @@ Built as a Learning in Public prototype.
 | AMC | HDFC Mutual Fund |
 | Schemes | 5 (Large Cap, Flexi Cap, ELSS, Small Cap, Balanced Advantage) |
 | Corpus | Exactly 5 public Groww scheme pages |
-| LLM | Mistral (`mistral-small-latest`) |
+| LLM | Groq (`groq/compound-mini` via API) |
 | Embeddings | `sentence-transformers/all-MiniLM-L6-v2` (local) |
 | Vector DB | ChromaDB (persisted in `data/vectordb/`) |
 | UI | Streamlit (Groww green/white) |
@@ -23,7 +34,7 @@ Built as a Learning in Public prototype.
 ## Prerequisites
 
 - **Python 3.11+** installed and on PATH
-- **Mistral API key** — get one free at [console.mistral.ai](https://console.mistral.ai)
+- **Groq API key** — get one free at [console.groq.com](https://console.groq.com)
 - Internet access to fetch the 5 Groww pages during ingest
 
 ---
@@ -45,10 +56,10 @@ source .venv/bin/activate
 # 3. Install dependencies
 pip install -r requirements.txt
 
-# 4. Set your Mistral API key
+# 4. Set your Groq API key
 copy .env.example .env        # Windows
 # cp .env.example .env        # macOS/Linux
-# Then open .env and replace 'your_mistral_api_key_here' with your actual key
+# Then open .env and replace 'your_groq_api_key_here' with your actual key
 
 # 5. Run ingest (fetches the 5 Groww pages, embeds, persists Chroma)
 PYTHONPATH=code python ingest.py
@@ -106,7 +117,7 @@ PYTHONPATH=code python -m retrieval "What is the 3-year CAGR of HDFC Large Cap?"
 
    | Key | Value |
    |-----|-------|
-   | `MISTRAL_API_KEY` | your key (mark as secret) |
+   | `GROQ_API_KEY` | your key (mark as secret) |
    | `PYTHONPATH` | `code` |
 
 5. Deploy and open the Render URL.
