@@ -1,6 +1,8 @@
 # Makes `python -m retrieval` work from project root with PYTHONPATH=code
-from retrieval.retriever import ask
 import sys
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
+from retrieval.retriever import ask
 
 if __name__ == "__main__":
     query = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "What is the expense ratio of HDFC Large Cap?"

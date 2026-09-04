@@ -10,8 +10,60 @@ import re
 RAW_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "raw")
 CHUNKS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "chunks")
 
-CHUNK_SIZE = 2000    # characters (~500 tokens for MiniLM-L6)
-CHUNK_OVERLAP = 200  # characters
+CHUNK_SIZE = 500     # characters — small enough to isolate individual facts
+CHUNK_OVERLAP = 75   # characters
+
+# Lines that are obviously navigation/UI junk to drop
+_JUNK_LINE = re.compile(
+    r"^(1D|1M|6M|1Y|3Y|5Y|All|Blog|Credit|Pricing|Compare|"
+    r"Start SIP|Invest now|View details|Education|Experience|"
+    r"Return calculator|Lumpsum calculator|SWP calculator|Goal planner|SIP calculator|"
+    r"Monthly SIP|One time|Monthly investment|Over the past|Total investment|"
+    r"Would.ve become|Historic returns|Returns|Brokerage.*charges|"
+    r"Filter based|Explore all|Download|Read more|Show more|Load more|"
+    r"\+|\-|%|\d{1,2}$)$",
+    re.IGNORECASE,
+)
+
+# Known fact labels whose next line is their value
+_FACT_LABELS = {
+    "expense ratio", "min. for sip", "minimum sip", "minimum lumpsum",
+    "exit load", "fund size (aum)", "aum", "rating",
+    "benchmark", "risk", "riskometer", "lock-in period", "lock in",
+    "category", "fund type", "launch date", "fund manager",
+    "nav", "min. for lumpsum",
+}
+
+
+def _clean_body(text: str) -> str:
+    """
+    Consolidate label-value pairs and drop navigation noise lines.
+    E.g. 'Expense ratio\\n1.02%' → 'Expense ratio: 1.02%'
+    """
+    lines = text.split("\n")
+    cleaned = []
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+        if not line:
+            i += 1
+            continue
+        # Drop obvious UI/nav junk
+        if _JUNK_LINE.match(line):
+            i += 1
+            continue
+        # Join label + value on next line
+        if line.lower() in _FACT_LABELS and i + 1 < len(lines):
+            val = lines[i + 1].strip()
+            if val and len(val) < 120:
+                cleaned.append(f"{line}: {val}")
+                i += 2
+                continue
+        cleaned.append(line)
+        i += 1
+    result = "\n".join(cleaned)
+    result = re.sub(r"\n{3,}", "\n\n", result)
+    return result.strip()
 
 
 def _parse_header(filepath: str) -> dict:
@@ -57,6 +109,7 @@ def chunk_file(filepath: str, scheme_slug: str) -> list[dict]:
     """Return list of chunk dicts for a single raw file."""
     meta = _parse_header(filepath)
     body = _read_body(filepath)
+    body = _clean_body(body)          # consolidate facts, drop nav noise
     raw_chunks = _split_chunks(body)
 
     chunks = []
@@ -91,7 +144,7 @@ def chunk_all(raw_dir: str = RAW_DIR, chunks_dir: str = CHUNKS_DIR) -> list[dict
         with open(out_path, "w", encoding="utf-8") as fh:
             json.dump(chunks, fh, ensure_ascii=False, indent=2)
 
-        print(f"  {scheme_slug}: {len(chunks)} chunks → {out_path}")
+        print(f"  {scheme_slug}: {len(chunks)} chunks -> {out_path}")
         all_chunks.extend(chunks)
 
     return all_chunks

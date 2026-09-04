@@ -6,7 +6,6 @@ Also provides a query helper used by the retrieval phase.
 import os
 
 import chromadb
-from chromadb.config import Settings
 
 VECTORDB_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "vectordb")
 COLLECTION_NAME = "groww_mf_faq"
@@ -54,6 +53,20 @@ def upsert_chunks(chunks: list[dict], embeddings: list[list[float]]) -> None:
             metadatas=metadatas[start : start + batch],
         )
     print(f"  Upserted {len(ids)} chunks into '{COLLECTION_NAME}'.")
+
+
+def reset_collection() -> None:
+    """Delete and recreate the collection (used before full re-ingest)."""
+    global _client, _collection
+    if _client is None:
+        os.makedirs(VECTORDB_DIR, exist_ok=True)
+        _client = chromadb.PersistentClient(path=VECTORDB_DIR)
+    try:
+        _client.delete_collection(COLLECTION_NAME)
+        print(f"  Deleted old collection '{COLLECTION_NAME}'.")
+    except Exception:
+        pass  # didn't exist yet — fine
+    _collection = None  # force re-create on next get_collection()
 
 
 def query_collection(query_embedding: list[float], n_results: int = 4) -> dict:

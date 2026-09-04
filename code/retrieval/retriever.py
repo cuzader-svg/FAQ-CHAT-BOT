@@ -17,7 +17,7 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-GROQ_MODEL = "llama-3.1-8b-instant"
+GROQ_MODEL = "groq/compound-mini"
 
 _ADVICE_PATTERNS = re.compile(
     r"\b(should i|should we|buy|sell|invest in|worth buying|best fund|"
@@ -140,7 +140,7 @@ def ask(query: str) -> Answer:
     from vectordb.store import query_collection
 
     query_vec = embed_query(query)
-    results = query_collection(query_vec, n_results=2)  # 2 is enough for single-fact answers
+    results = query_collection(query_vec, n_results=4)  # top-4 for better recall
 
     docs = results.get("documents", [[]])[0]
     metas = results.get("metadatas", [[]])[0]
@@ -207,6 +207,15 @@ def ask(query: str) -> Answer:
                 time.sleep(wait)
                 last_exc = Exception("Rate limited (429)")
                 continue
+            # Non-retryable errors (4xx except 429) — return immediately with clear message
+            if 400 <= resp.status_code < 500:
+                err_msg = resp.json().get("error", {}).get("message", "API error")
+                return Answer(
+                    text=f"API error ({resp.status_code}): {err_msg[:200]}",
+                    source_url=source_url,
+                    fetched_at=fetched_at,
+                    refused=True,
+                )
             resp.raise_for_status()
             answer_text = resp.json()["choices"][0]["message"]["content"].strip()
             return Answer(text=answer_text, source_url=source_url, fetched_at=fetched_at)
@@ -215,7 +224,7 @@ def ask(query: str) -> Answer:
             if attempt < 2:
                 time.sleep(2 ** attempt)
 
-    # All retries exhausted
+    # All retries exhausted (429 rate limit)
     return Answer(
         text=(
             "The API is temporarily busy (rate limit). "
