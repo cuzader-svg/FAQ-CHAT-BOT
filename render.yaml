@@ -2,7 +2,11 @@ services:
   - type: web
     name: faq-chat-bot
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    # Pre-install deps AND warm-download the MiniLM model during build
+    # so the first user request is instant (no cold-download delay).
+    buildCommand: >
+      pip install -r requirements.txt &&
+      PYTHONPATH=code python -c "from embedding.embedder import get_model; get_model(); print('Model cached OK')"
     startCommand: >
       streamlit run code/ui/app.py
       --server.port $PORT
@@ -12,6 +16,13 @@ services:
     envVars:
       - key: PYTHONPATH
         value: code
-      - key: MISTRAL_API_KEY
-        sync: false   # set manually in Render dashboard as a secret
-    plan: standard   # free plan is 512 MB and will OOM; standard = 1 GB
+      - key: GROQ_API_KEY
+        sync: false   # ← set this in Render dashboard → Environment (secret)
+      # Hugging Face model cache dir (writable on Render)
+      - key: HF_HOME
+        value: /tmp/hf_cache
+      - key: TRANSFORMERS_CACHE
+        value: /tmp/hf_cache
+    # Free plan: 512 MB RAM.  MiniLM-L6-v2 + torch fits ~450 MB.
+    # If you see an OOM error, upgrade to the Starter plan (512 MB guaranteed).
+    plan: free
