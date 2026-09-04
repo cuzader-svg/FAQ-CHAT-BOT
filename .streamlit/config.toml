@@ -1,7 +1,12 @@
 [ui]
-# Hides the Deploy button and Streamlit toolbar from the top-right corner
 toolbarMode = "minimal"
 
 [browser]
-# Disable usage stats phone-home
 gatherUsageStats = false
+
+[theme]
+primaryColor       = "#00D09C"
+backgroundColor    = "#F4F4F9"
+secondaryBackgroundColor = "#FFFFFF"
+textColor          = "#1A2236"
+font               = "sans serif"
